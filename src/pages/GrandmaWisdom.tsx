@@ -215,10 +215,6 @@ const GrandmaWisdom = () => {
 
   const { cards, loading, error, fetchWisdom } = useGrandmaWisdom();
 
-  useEffect(() => {
-    fetchWisdom({ region: selectedRegion, stage: selectedStage, category: selectedCategory, count: 6 });
-  }, []);
-
   const handleGenerate = () => {
     fetchWisdom({ region: selectedRegion, stage: selectedStage, category: selectedCategory, count: 6 });
   };

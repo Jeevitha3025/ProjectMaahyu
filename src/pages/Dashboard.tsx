@@ -1,28 +1,38 @@
-import { Calendar, Brain, Heart, Sparkles, TrendingUp, BookOpen, ChevronRight } from "lucide-react";
+import { Calendar, Brain, Heart, Sparkles, TrendingUp, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import Navbar from "@/components/layout/Navbar";
 import MaaMindChatbot from "@/components/chat/MaaMindChatbot";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
+  // ✅ INSIDE the component — this is where hooks must live
+  const { user, userProfile } = useAuth();
+
+  const getGreeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good Morning";
+    if (h < 17) return "Good Afternoon";
+    return "Good Evening";
+  };
+
   const todayMoods = ["😊", "😌", "🥰"];
   const weekProgress = 65;
 
   const quickActions = [
-    { icon: Calendar, label: "Log Mood", path: "/mood-calendar", color: "bg-mood-happy/20 text-mood-happy" },
-    { icon: Brain, label: "Screening", path: "/screening", color: "bg-mood-calm/20 text-mood-calm" },
-    { icon: Heart, label: "Grandma Tips", path: "/grandma-wisdom", color: "bg-secondary/20 text-secondary" },
-    
+    { icon: Calendar, label: "Log Mood",      path: "/mood-calendar",  color: "bg-mood-happy/20 text-mood-happy" },
+    { icon: Brain,    label: "Screening",     path: "/screening",      color: "bg-mood-calm/20 text-mood-calm"  },
+    { icon: Heart,    label: "Grandma Tips",  path: "/grandma-wisdom", color: "bg-secondary/20 text-secondary"  },
   ];
 
   const recentMoods = [
     { day: "Mon", mood: "😊", color: "bg-mood-happy" },
-    { day: "Tue", mood: "😌", color: "bg-mood-calm" },
-    { day: "Wed", mood: "😔", color: "bg-mood-sad" },
+    { day: "Tue", mood: "😌", color: "bg-mood-calm"  },
+    { day: "Wed", mood: "😔", color: "bg-mood-sad"   },
     { day: "Thu", mood: "😊", color: "bg-mood-happy" },
-    { day: "Fri", mood: "🥰", color: "bg-primary" },
-    { day: "Sat", mood: "😌", color: "bg-mood-calm" },
+    { day: "Fri", mood: "🥰", color: "bg-primary"    },
+    { day: "Sat", mood: "😌", color: "bg-mood-calm"  },
     { day: "Sun", mood: "😊", color: "bg-mood-happy" },
   ];
 
@@ -33,7 +43,10 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 pt-24 pb-12">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold mb-2">Good Morning, Likhi! 🌸</h1>
+          <h1 className="font-display text-3xl font-bold mb-2">
+            {getGreeting()},{" "}
+            {userProfile?.name?.split(" ")[0] || user?.displayName?.split(" ")[0] || "Mama"}! 🌸
+          </h1>
           <p className="text-muted-foreground">How are you feeling today?</p>
         </div>
 
@@ -48,7 +61,9 @@ const Dashboard = () => {
               <button
                 key={emoji}
                 className={`text-3xl p-3 rounded-xl transition-all hover:scale-110 ${
-                  todayMoods.includes(emoji) ? "bg-primary/20 ring-2 ring-primary" : "bg-muted hover:bg-muted/80"
+                  todayMoods.includes(emoji)
+                    ? "bg-primary/20 ring-2 ring-primary"
+                    : "bg-muted hover:bg-muted/80"
                 }`}
               >
                 {emoji}
@@ -104,7 +119,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Maa Wrapped Teaser */}
+          {/* Maa Wrapped */}
           <div className="card-elevated p-6 bg-gradient-to-br from-primary/5 via-blush/50 to-card">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
@@ -117,15 +132,14 @@ const Dashboard = () => {
                 </p>
                 <Link to="/maa-wrapped">
                   <Button variant="outline" size="sm" className="rounded-full gap-2">
-                    View Insights
-                    <ChevronRight className="w-4 h-4" />
+                    View Insights <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Grandma Tip of the Day */}
+          {/* Grandma Tip */}
           <div className="card-elevated p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-sage/20 flex items-center justify-center">
@@ -146,7 +160,7 @@ const Dashboard = () => {
             </Link>
           </div>
 
-          {/* Upcoming Screening */}
+          {/* Screening */}
           <div className="card-elevated p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-mood-calm/20 flex items-center justify-center">
@@ -159,8 +173,7 @@ const Dashboard = () => {
             </p>
             <Link to="/screening">
               <Button className="w-full rounded-full gap-2">
-                Take Screening
-                <ChevronRight className="w-4 h-4" />
+                Take Screening <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
