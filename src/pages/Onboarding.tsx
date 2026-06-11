@@ -224,11 +224,6 @@ const Onboarding = () => {
             </div>
           )}
         </div>
-
-        <p className="text-center mt-6 text-sm text-muted-foreground">
-          Already completed this?{" "}
-          <a href="/dashboard" className="text-primary font-medium hover:underline">Go to Dashboard</a>
-        </p>
       </div>
     </div>
   );
