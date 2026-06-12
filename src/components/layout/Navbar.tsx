@@ -20,6 +20,7 @@ const Navbar = () => {
     ? [
         { name: "Dashboard",      path: "/dashboard" },
         { name: "Mood Calendar",  path: "/mood-calendar" },
+        { name: "MaaWrapped",     path: "/maawrapped" },
         { name: "Grandma Wisdom", path: "/grandma-wisdom" },
         { name: "Screening",      path: "/screening" },
         { name: "MaaGang",        path: "/maagang" },

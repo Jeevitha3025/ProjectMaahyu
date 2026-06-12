@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import MaaGang from "./pages/MaaGang";
+import MaaWrapped from "./pages/MaaWrapped";
 import MoodCalendar from "./pages/MoodCalendar";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -74,6 +75,12 @@ const AppRoutes = () => {
         <Route path="/maagang"
         element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
       />
+      <Route path="/maawrapped"
+        element={
+          !user ? <Navigate to="/auth" replace />
+          : needsOnboarding ? <Navigate to="/onboarding" replace />
+          : <MaaWrapped />
+        } />
 
       <Route path="*" element={<NotFound />} />
     </Routes>
