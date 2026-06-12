@@ -16,14 +16,18 @@ const Footer = () => {
             <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
               About
             </Link>
-            <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
-              Privacy Policy
-            </Link>
+           <Link to="/security-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+           Privacy & Security
+          </Link>
             <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
               Terms of Service
             </Link>
             <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
+            </Link>
+
+            <Link to="/security-policy" className="text-xs text-rose-600">
+              Security Policy
             </Link>
           </nav>
 

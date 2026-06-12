@@ -24,6 +24,7 @@ const Navbar = () => {
         { name: "Grandma Wisdom", path: "/grandma-wisdom" },
         { name: "Screening",      path: "/screening" },
         { name: "MaaGang",        path: "/maagang" },
+        { name: "Security Policy", path: "/security-policy" }
       ]
     : [{ name: "Home", path: "/" }];
 
