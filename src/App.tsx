@@ -14,8 +14,6 @@ import MaaWrapped from "./pages/MaaWrapped";
 import MoodCalendar from "./pages/MoodCalendar";
 import Onboarding from "./pages/Onboarding";
 import Screening from "./pages/Screening";
-import Index from "./pages/Index";
-import GrandmaWisdom from "./pages/GrandmaWisdom";
 import SecurityPolicy from "./pages/SecurityPolicy";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
