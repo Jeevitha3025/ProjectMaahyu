@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { ArrowRight, ArrowLeft, Brain, CheckCircle, AlertTriangle, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Progress } from "@/components/ui/progress";
-import Navbar from "@/components/layout/Navbar";
 import MaaMindChatbot from "@/components/chat/MaaMindChatbot";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/firebase";
+import Navbar from "@/components/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { ArrowLeft, ArrowRight, Brain, CheckCircle, Heart } from "lucide-react";
+import { useState } from "react";
 
 interface Question {
   id: number;
@@ -92,26 +92,40 @@ const Screening = () => {
   const handleAnswer = (value: number) => {
     setAnswers((prev) => ({ ...prev, [questions[currentQuestion].id]: value }));
   };
+  const getRiskLevel = (score: number): "low" | "medium" | "high" => {
+  if (score <= 9)  return "low";
+  if (score
+ <= 14) return "medium";
+  return "high";
+};
+
+const saveToFirestore = async (finalAnswers: Record<number, number>) => {
+  if (!user) return;
+  const score     = getTotalScore(finalAnswers);
+  const level     = getLevel(score);       // "Minimal/Mild/Moderate" — kept for your own reference
+  const riskLevel = getRiskLevel(score);   // "low/medium/high" — for admin dashboard
+
+  try {
+    await addDoc(
+      collection(db, "assessmentScores"),  // ✅ top-level collection
+      {
+        userId:      user.uid,
+        userEmail:   user.email,
+        score,                             // stored in Firestore, never shown to user
+        level,                             // human-readable label
+        riskLevel,                         // ✅ what admin dashboard reads
+        answers:     finalAnswers,
+        type:        "PHQ9+EPDS",
+        completedAt: serverTimestamp(),
+      }
+    );
+    console.log("Screening result saved ✅");
+  } catch (err) {
+    console.error("Failed to save screening result:", err);
+  }
+};
 
   // ─── Save to Firestore (score hidden from user, visible to admin) ───────────
-  const saveToFirestore = async (finalAnswers: Record<number, number>) => {
-    if (!user) return;
-    const score = getTotalScore(finalAnswers);
-    const level = getLevel(score);
-    try {
-      await addDoc(
-        collection(db, "users", user.uid, "screeningResults"),
-        {
-          score,
-          level,
-          answers: finalAnswers,
-          completedAt: serverTimestamp(),
-        }
-      );
-    } catch (err) {
-      console.error("Failed to save screening result:", err);
-    }
-  };
 
   const handleNext = async () => {
     if (currentQuestion < questions.length - 1) {
