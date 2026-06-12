@@ -22,6 +22,7 @@ const Navbar = () => {
         { name: "Mood Calendar",  path: "/mood-calendar" },
         { name: "Grandma Wisdom", path: "/grandma-wisdom" },
         { name: "Screening",      path: "/screening" },
+        { name: "MaaGang",        path: "/maagang" },
       ]
     : [{ name: "Home", path: "/" }];
 
