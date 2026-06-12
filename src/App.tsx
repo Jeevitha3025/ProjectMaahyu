@@ -12,6 +12,8 @@ import MoodCalendar from "./pages/MoodCalendar";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import Screening from "./pages/Screening";
+import Index from "./pages/Index";
+import GrandmaWisdom from "./pages/GrandmaWisdom";
 
 const queryClient = new QueryClient();
 
