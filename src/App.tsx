@@ -7,6 +7,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import GrandmaWisdom from "./pages/GrandmaWisdom";
+import Index from "./pages/Index";
 import MaaGang from "./pages/MaaGang";
 import MoodCalendar from "./pages/MoodCalendar";
 import NotFound from "./pages/NotFound";
