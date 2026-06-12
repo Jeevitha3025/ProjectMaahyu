@@ -9,12 +9,12 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import MaaGang from "./pages/MaaGang";
 import MoodCalendar from "./pages/MoodCalendar";
-import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import Screening from "./pages/Screening";
 import Index from "./pages/Index";
 import GrandmaWisdom from "./pages/GrandmaWisdom";
-
+import SecurityPolicy from "./pages/SecurityPolicy";
+import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const LoadingScreen = () => (
@@ -74,6 +74,7 @@ const AppRoutes = () => {
         <Route path="/maagang"
         element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
       />
+      <Route path="/security-policy" element={<SecurityPolicy />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>
