@@ -75,16 +75,15 @@ const AppRoutes = () => {
         <Route path="/maagang"
         element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
       />
-<<<<<<< HEAD
       <Route path="/maawrapped"
         element={
           !user ? <Navigate to="/auth" replace />
           : needsOnboarding ? <Navigate to="/onboarding" replace />
           : <MaaWrapped />
         } />
-=======
+
       <Route path="/security-policy" element={<SecurityPolicy />} />
->>>>>>> 0df3a4d4419e5583363e4d634e2b102c8649b9d5
+
 
       <Route path="*" element={<NotFound />} />
     </Routes>
