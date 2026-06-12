@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import nurturingAvatar from "@/assets/nurturing-avatar.png";
 
 const MaaMindChatbot = () => {
   const { user, userProfile } = useAuth();
@@ -41,7 +42,7 @@ const MaaMindChatbot = () => {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "Error connecting to MaaMind 😔" },
+        { role: "bot", content: "Error connecting to SheRo 😔" },
       ]);
     }
 
@@ -91,14 +92,12 @@ const MaaMindChatbot = () => {
         }
 
         .maa-avatar {
-          width: 36px;
-          height: 36px;
-          background: rgba(255,255,255,0.2);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.4);
+        flex-shrink: 0;
         }
 
         .maa-header-text h3 {
@@ -300,9 +299,9 @@ const MaaMindChatbot = () => {
             {/* Header */}
             <div className="maa-header">
               <div className="maa-header-left">
-                <div className="maa-avatar">🤱</div>
+                <img src={nurturingAvatar} alt="SheRo" className="maa-avatar" style={{ objectFit: "cover", padding: 0 }} />
                 <div className="maa-header-text">
-                  <h3>MaaMind</h3>
+                  <h3>SheRo</h3>
                   <span>
                     <span className="maa-online-dot" />
                     Your nurturing companion
@@ -352,7 +351,9 @@ const MaaMindChatbot = () => {
 
           </div>
         ) : (
-          <button className="maa-fab" onClick={() => setIsOpen(true)}>🤱</button>
+          <button className="maa-fab" onClick={() => setIsOpen(true)}>
+  <img src={nurturingAvatar} alt="SheRo" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+</button>
         )}
       </div>
     </>

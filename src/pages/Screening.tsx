@@ -63,14 +63,14 @@ const getUserMessage = (score: number) => {
   };
   if (score <= 14) return {
     headline:  "It's okay to not be okay 🤍",
-    body:      "You may be carrying more than usual right now — emotionally or physically. You deserve support. Consider talking to someone you trust, or let MaaMind be here for you today.",
+    body:      "You may be carrying more than usual right now — emotionally or physically. You deserve support. Consider talking to someone you trust, or let SheRo be here for you today.",
     icon:      Heart,
     bgColor:   "bg-mood-anxious/20",
     iconColor: "text-mood-anxious",
   };
   return {
     headline:  "You are seen and you are not alone 💜",
-    body:      "Your responses suggest you may be going through a really difficult time. Please be gentle with yourself. Reaching out — to a friend, a doctor, or MaaMind — is a brave and important step.",
+    body:      "Your responses suggest you may be going through a really difficult time. Please be gentle with yourself. Reaching out — to a friend, a doctor, or SheRo — is a brave and important step.",
     icon:      Heart,
     bgColor:   "bg-mood-sad/20",
     iconColor: "text-mood-sad",
@@ -224,7 +224,7 @@ const saveToFirestore = async (finalAnswers: Record<number, number>) => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>🌿 Step outside for 5 minutes of fresh air</li>
                 <li>💧 Drink a glass of water slowly</li>
-                <li>🤲 Talk to MaaMind if something is weighing on you</li>
+                <li>🤲 Talk to SheRo if something is weighing on you</li>
                 <li>📞 Call your emergency contact if you need support</li>
               </ul>
             </div>
@@ -243,7 +243,7 @@ const saveToFirestore = async (finalAnswers: Record<number, number>) => {
                 Take Again
               </Button>
               <Button className="rounded-full gap-2">
-                Talk to MaaMind
+                Talk to SheRo
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>

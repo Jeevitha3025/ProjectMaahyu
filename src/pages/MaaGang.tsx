@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "@/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import Navbar from "@/components/layout/Navbar";
-import ChatbotWidget from "@/components/chat/ChatbotWidget";
 import GroupChat from "@/components/community/GroupChat";
 
 interface Group {
@@ -148,7 +147,6 @@ const MaaGang = () => {
         </div>
       </main>
 
-      <ChatbotWidget />
     </div>
   );
 };

@@ -14,8 +14,8 @@ const features = [
   },
   {
     icon: MessageCircle,
-    title: "MaaMind — Your Midnight Friend",
-    description: "Awake at 2am with a heavy heart? MaaMind listens without judgment, anytime you need to talk.",
+    title: "SheRo — Your Midnight Friend",
+    description: "Awake at 2am with a heavy heart? SheRo listens without judgment, anytime you need to talk.",
     color: "bg-primary/20 text-primary",
   },
   {
@@ -46,7 +46,7 @@ const features = [
 
 const testimonials = [
   {
-    quote: "At 3am with a crying baby, I didn't feel so alone anymore. MaaMind just... got it.",
+    quote: "At 3am with a crying baby, I didn't feel so alone anymore. SheRo just... got it.",
     name: "A new mom, Bengaluru",
     emoji: "🌙",
   },

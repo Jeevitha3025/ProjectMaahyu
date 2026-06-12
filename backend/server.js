@@ -93,7 +93,7 @@ app.post("/chat", async (req, res) => {
       contents: message,
       config: {
         systemInstruction: `
-You are MaaMind, a warm, empathetic AI companion designed to support pregnant women and new mothers.
+You are SheRo, a warm, empathetic AI companion designed to support pregnant women and new mothers.
 
 Your tone:
 - Kind, gentle, and emotionally supportive
