@@ -1,20 +1,26 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
+import LifestyleScreening from "@/components/onboarding/LifestyleScreening";
 import {
-  ArrowRight, ArrowLeft, User, Calendar, Heart,
-  Phone, AlertCircle, Check,
-} from "lucide-react";
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import logo from "@/assets/logo.png";
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  Check,
+  Heart,
+  Phone,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import LifestyleScreening from "@/components/onboarding/LifestyleScreening";
 import { useAuth } from "../context/AuthContext";
 
 type Stage = "antenatal" | "postnatal" | "toddler-care" | "";
@@ -26,6 +32,8 @@ interface FormData {
   emergencyContact: string;
   emergencyPhone: string;
 }
+
+type FormErrors = Partial<Record<keyof FormData, string>>;
 
 const stages = [
   { value: "antenatal",    label: "Expecting",   description: "I'm currently pregnant", icon: "🤰" },
@@ -51,7 +59,7 @@ const Onboarding = () => {
 
   const [step, setStep]         = useState(1);
   const [isSaving, setIsSaving] = useState(false);
-  const [errors, setErrors]     = useState<Partial<FormData>>({});
+  const [errors, setErrors]     = useState<FormErrors>({});
   const [form, setForm] = useState<FormData>({
     phone: "", dob: "", stage: "", emergencyContact: "", emergencyPhone: "",
   });
@@ -106,7 +114,7 @@ const Onboarding = () => {
   };
 
   const validate = () => {
-    const e: Partial<FormData> = {};
+    const e: FormErrors = {};
     if (step === 1) {
       if (!form.dob)   e.dob   = "Date of birth is required";
       if (!form.stage) e.stage = "Please select your stage";

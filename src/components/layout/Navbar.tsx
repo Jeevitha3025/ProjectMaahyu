@@ -1,9 +1,9 @@
+import logo from "@/assets/logo.png";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import logo from "@/assets/logo.png";
-import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,7 @@ const Navbar = () => {
         { name: "Grandma Wisdom", path: "/grandma-wisdom" },
         { name: "Screening",      path: "/screening" },
         { name: "MaaGang",        path: "/maagang" },
-        { name: "Security Policy", path: "/security-policy" }
+        { name: "Security Policy", path: "/security-policy" },
       ]
     : [{ name: "Home", path: "/" }];
 
@@ -62,9 +62,29 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-sm font-medium text-foreground">
-                  Hi, {userProfile?.name?.split(" ")[0] || user.displayName?.split(" ")[0] || "Mama"} 🌸
-                </span>
+                {/* ✅ Avatar button → goes to profile */}
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  title="View profile"
+                >
+                
+                  <Link
+  to="/profile"
+  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+>
+  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xl
+    ${isActive("/profile")
+      ? "bg-primary/20 ring-2 ring-primary"
+      : "bg-primary/10 hover:bg-primary/20"} transition-colors`}>
+    {userProfile?.avatar || "🌸"}
+  </div>
+  <span className="text-sm font-medium text-foreground">
+    Hi, {userProfile?.name?.split(" ")[0] || user.displayName?.split(" ")[0] || "Mama"}
+  </span>
+</Link>
+                </Link>
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -100,6 +120,22 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <div className="flex flex-col gap-2">
+
+              {/* ✅ Profile link in mobile menu */}
+              {user && (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 transition-all
+                    ${isActive("/profile")
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+                >
+                  <span className="text-xl">{userProfile?.avatar || "🌸"}</span>
+                  My Profile
+                </Link>
+              )}
+
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
