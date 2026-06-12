@@ -2,12 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight, ArrowLeft, User, Calendar, Heart,
-  Phone, Mail, Lock, AlertCircle, Check,
+  Phone, AlertCircle, Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import logo from "@/assets/logo.png";
 import { toast } from "sonner";
 import LifestyleScreening from "@/components/onboarding/LifestyleScreening";
@@ -29,6 +33,18 @@ const stages = [
   { value: "toddler-care", label: "Toddler Mom",  description: "I have a toddler",       icon: "🧒" },
 ];
 
+// ─── Age helper ────────────────────────────────────────────────────────────
+const calculateAge = (dobStr: string): number => {
+  const dob = new Date(dobStr);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const { userProfile, saveOnboardingProfile } = useAuth();
@@ -40,9 +56,53 @@ const Onboarding = () => {
     phone: "", dob: "", stage: "", emergencyContact: "", emergencyPhone: "",
   });
 
+  // DOB confirmation dialog (age < 18, >= 12)
+  const [showAgeConfirm, setShowAgeConfirm] = useState(false);
+  const [pendingDob, setPendingDob] = useState<string | null>(null);
+
   const set = (k: keyof FormData, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
     setErrors((p) => ({ ...p, [k]: "" }));
+  };
+
+  // ─── DOB change handler with age trigger ──────────────────────────────────
+  const handleDobChange = (value: string) => {
+    if (!value) {
+      set("dob", "");
+      return;
+    }
+
+    const age = calculateAge(value);
+
+    if (age < 12) {
+      setErrors((p) => ({ ...p, dob: "Please enter a valid date of birth" }));
+      setForm((p) => ({ ...p, dob: "" })); // reject the value entirely
+      return;
+    }
+
+    if (age < 18) {
+      // Hold the value, ask for confirmation before accepting
+      setPendingDob(value);
+      setShowAgeConfirm(true);
+      return;
+    }
+
+    // 18+ — accept normally
+    set("dob", value);
+  };
+
+  const confirmYoungAge = () => {
+    if (pendingDob) {
+      set("dob", pendingDob);
+    }
+    setShowAgeConfirm(false);
+    setPendingDob(null);
+  };
+
+  const cancelYoungAge = () => {
+    setShowAgeConfirm(false);
+    setPendingDob(null);
+    setForm((p) => ({ ...p, dob: "" }));
   };
 
   const validate = () => {
@@ -135,8 +195,12 @@ const Onboarding = () => {
                   <Label>Date of Birth</Label>
                   <div className="relative mt-1.5">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input type="date" value={form.dob}
-                      onChange={(e) => set("dob", e.target.value)} className="pl-10" />
+                    <Input
+                      type="date"
+                      value={form.dob}
+                      onChange={(e) => handleDobChange(e.target.value)}
+                      className="pl-10"
+                    />
                   </div>
                   {errors.dob && <Err msg={errors.dob} />}
                 </div>
@@ -225,11 +289,29 @@ const Onboarding = () => {
           )}
         </div>
 
-        <p className="text-center mt-6 text-sm text-muted-foreground">
-          Already completed this?{" "}
-          <a href="/dashboard" className="text-primary font-medium hover:underline">Go to Dashboard</a>
-        </p>
       </div>
+
+      {/* Age confirmation dialog — shown for ages 12-17 */}
+      <AlertDialog open={showAgeConfirm} onOpenChange={(open) => { if (!open) cancelYoungAge(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Just double-checking 🌸</AlertDialogTitle>
+            <AlertDialogDescription>
+              The date of birth you entered means you're under 18. Is this correct?
+              Maahyu is designed for mothers of all ages, and we just want to make
+              sure your information is accurate.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelYoungAge}>
+              Let me re-enter
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmYoungAge}>
+              Yes, that's correct
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

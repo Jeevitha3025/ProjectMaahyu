@@ -99,7 +99,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const saveOnboardingProfile = async (data: Partial<UserProfile>) => {
     if (!user) throw new Error("No user logged in");
-    const updates = { ...data, onboardingComplete: true };
+    // In saveOnboardingProfile, replace the updates line with:
+    const age = data.dob
+    ? Math.floor((Date.now() - new Date(data.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : undefined;
+
+    const updates = {
+    ...data,
+    age,
+    role: "user",
+    onboardingComplete: true,
+    updatedAt: serverTimestamp(),
+    };
     await setDoc(doc(db, "users", user.uid), updates, { merge: true });
     setUserProfile((prev) => (prev ? { ...prev, ...updates } : null));
   };

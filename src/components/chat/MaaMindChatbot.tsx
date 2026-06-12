@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const MaaMindChatbot = () => {
+  const { user, userProfile } = useAuth();
+
   const [messages, setMessages] = useState<any[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [input,    setInput]    = useState("");
+  const [loading,  setLoading]  = useState(false);
+  const [isOpen,   setIsOpen]   = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -13,15 +16,25 @@ const MaaMindChatbot = () => {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+
     const userMsg = { role: "user", content: input };
     setMessages((prev) => [...prev, userMsg]);
+    const currentInput = input; // capture before clearing
     setInput("");
     setLoading(true);
+
     try {
       const res = await fetch("http://localhost:5000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          message:          currentInput,
+          uid:              user?.uid              ?? "unknown",
+          userName:         userProfile?.name      ?? "Unknown User",
+          userEmail:        user?.email            ?? "Unknown",
+          emergencyContact: userProfile?.emergencyContact ?? "Not provided",
+          emergencyPhone:   userProfile?.emergencyPhone   ?? "Not provided",
+        }),
       });
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "bot", content: data.reply }]);
@@ -31,6 +44,7 @@ const MaaMindChatbot = () => {
         { role: "bot", content: "Error connecting to MaaMind 😔" },
       ]);
     }
+
     setLoading(false);
   };
 
@@ -257,7 +271,7 @@ const MaaMindChatbot = () => {
           box-shadow: 0 3px 10px rgba(232,105,74,0.35);
           flex-shrink: 0;
         }
-        .maa-send:hover { transform: scale(1.07); box-shadow: 0 5px 15px rgba(232,105,74,0.45); }
+        .maa-send:hover  { transform: scale(1.07); box-shadow: 0 5px 15px rgba(232,105,74,0.45); }
         .maa-send:active { transform: scale(0.96); }
         .maa-send svg { width: 16px; height: 16px; fill: white; }
 
@@ -282,6 +296,7 @@ const MaaMindChatbot = () => {
       <div className="maa-widget">
         {isOpen ? (
           <div className="maa-card">
+
             {/* Header */}
             <div className="maa-header">
               <div className="maa-header-left">
@@ -334,6 +349,7 @@ const MaaMindChatbot = () => {
                 </svg>
               </button>
             </div>
+
           </div>
         ) : (
           <button className="maa-fab" onClick={() => setIsOpen(true)}>🤱</button>

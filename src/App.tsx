@@ -24,37 +24,59 @@ const LoadingScreen = () => (
   </div>
 );
 
+// Replace AppRoutes with this:
 const AppRoutes = () => {
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
 
-  // Single loading gate — nothing renders until Firebase resolves
   if (loading) return <LoadingScreen />;
+
+  // Helper — logged in but onboarding not done
+  const needsOnboarding = user && userProfile && !userProfile.onboardingComplete;
+  // Helper — logged in and onboarding done
+  const isReady = user && userProfile?.onboardingComplete;
 
   return (
     <Routes>
-      {/* Homepage — always public */}
       <Route path="/" element={<Index />} />
 
-      {/* Auth — if already logged in, skip to dashboard */}
       <Route path="/auth"
         element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
 
-      {/* Onboarding — must be logged in */}
+      {/* Onboarding — logged in but not complete */}
       <Route path="/onboarding"
         element={user ? <Onboarding /> : <Navigate to="/auth" replace />} />
 
-      {/* Protected pages */}
+      {/* All protected routes — redirect to onboarding if not complete */}
       <Route path="/dashboard"
-        element={user ? <Dashboard /> : <Navigate to="/auth" replace />} />
+        element={
+          !user ? <Navigate to="/auth" replace />
+          : needsOnboarding ? <Navigate to="/onboarding" replace />
+          : <Dashboard />
+        } />
       <Route path="/mood-calendar"
-        element={user ? <MoodCalendar /> : <Navigate to="/auth" replace />} />
+        element={
+          !user ? <Navigate to="/auth" replace />
+          : needsOnboarding ? <Navigate to="/onboarding" replace />
+          : <MoodCalendar />
+        } />
       <Route path="/grandma-wisdom"
-        element={user ? <GrandmaWisdom /> : <Navigate to="/auth" replace />} />
+        element={
+          !user ? <Navigate to="/auth" replace />
+          : needsOnboarding ? <Navigate to="/onboarding" replace />
+          : <GrandmaWisdom />
+        } />
       <Route path="/screening"
-        element={user ? <Screening /> : <Navigate to="/auth" replace />} />
-        <Route path="/maagang"
-         element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
-/>
+
+        <Route path="/screening"
+        element={
+          !user ? <Navigate to="/auth" replace />
+          : needsOnboarding ? <Navigate to="/onboarding" replace />
+          : <Screening />
+        } />
+      <Route path="/maagang"
+        element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
+      />
+
 
       <Route path="*" element={<NotFound />} />
     </Routes>
