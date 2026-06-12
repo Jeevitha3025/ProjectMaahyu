@@ -49,6 +49,8 @@ yarn-error.log*
 *.tsbuildinfo
 
 # ── Package manager locks (keep one, ignore others) ──
-# If using npm, you can delete this block
 yarn.lock
 pnpm-lock.yaml
+
+# Firebase service account 
+backend/serviceAccountKey.json
