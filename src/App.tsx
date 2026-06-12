@@ -14,8 +14,8 @@ import MaaWrapped from "./pages/MaaWrapped";
 import MoodCalendar from "./pages/MoodCalendar";
 import Onboarding from "./pages/Onboarding";
 import Screening from "./pages/Screening";
-
-import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
+import GrandmaWisdom from "./pages/GrandmaWisdom";
 import SecurityPolicy from "./pages/SecurityPolicy";
 const queryClient = new QueryClient();
 
@@ -82,7 +82,9 @@ const AppRoutes = () => {
           : needsOnboarding ? <Navigate to="/onboarding" replace />
           : <MaaWrapped />
         } />
+=======
       <Route path="/security-policy" element={<SecurityPolicy />} />
+>>>>>>> 0df3a4d4419e5583363e4d634e2b102c8649b9d5
 
       <Route path="*" element={<NotFound />} />
     </Routes>
