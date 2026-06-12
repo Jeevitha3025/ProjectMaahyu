@@ -1,15 +1,15 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  updateProfile,
-  GoogleAuthProvider,
-  signInWithPopup,
+    GoogleAuthProvider,
+    User,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    updateProfile,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 
 export interface UserProfile {
@@ -21,6 +21,7 @@ export interface UserProfile {
   stage?: string;
   emergencyContact?: string;
   emergencyPhone?: string;
+  avatar?: string;
   screeningTags?: string[];
   onboardingComplete?: boolean;
   createdAt?: any;
