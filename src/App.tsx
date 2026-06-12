@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import MaaGang from "./pages/MaaGang";
 import MoodCalendar from "./pages/MoodCalendar";
 import GrandmaWisdom from "./pages/GrandmaWisdom";
 import Screening from "./pages/Screening";
@@ -65,11 +66,17 @@ const AppRoutes = () => {
           : <GrandmaWisdom />
         } />
       <Route path="/screening"
+
+        <Route path="/screening"
         element={
           !user ? <Navigate to="/auth" replace />
           : needsOnboarding ? <Navigate to="/onboarding" replace />
           : <Screening />
         } />
+      <Route path="/maagang"
+        element={user ? <MaaGang /> : <Navigate to="/auth" replace />}
+      />
+
 
       <Route path="*" element={<NotFound />} />
     </Routes>
