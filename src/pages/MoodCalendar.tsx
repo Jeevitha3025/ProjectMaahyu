@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import Navbar from "@/components/layout/Navbar";
 import MaaMindChatbot from "@/components/chat/MaaMindChatbot";
-import { collection, doc, setDoc, getDocs, serverTimestamp } from "firebase/firestore";
-import { db } from "@/firebase";
+import Navbar from "@/components/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/firebase";
+import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface MoodEntry {
   date: string;
@@ -35,6 +35,21 @@ const MOOD_COLOR_MAP: Record<string, string> = {
   "😴": "rgb(186, 85, 211)",     // Tired      - Purple
 };
 
+const reminderTypes = [
+  { type: "appointment", label: "Appointment", emoji: "🏥" },
+  { type: "medicine",    label: "Medicine",    emoji: "💊" },
+  { type: "other",       label: "Other",       emoji: "📌" },
+];
+
+interface Reminder {
+  id:    string;
+  date:  string;
+  type:  string;
+  title: string;
+  time?: string;
+  note?: string;
+}
+
 const MoodCalendar = () => {
   const { user } = useAuth();
 
@@ -46,6 +61,14 @@ const MoodCalendar = () => {
   const [note,          setNote]          = useState("");
   const [isSaving,      setIsSaving]      = useState(false);
   const [isLoading,     setIsLoading]     = useState(true);
+  const [reminders,          setReminders]          = useState<Reminder[]>([]);
+const [isReminderOpen,     setIsReminderOpen]      = useState(false);
+const [reminderDate,       setReminderDate]        = useState<string | null>(null);
+const [reminderType,       setReminderType]        = useState("appointment");
+const [reminderTitle,      setReminderTitle]       = useState("");
+const [reminderTime,       setReminderTime]        = useState("");
+const [reminderNote,       setReminderNote]        = useState("");
+const [isSavingReminder,   setIsSavingReminder]    = useState(false);
 
   // ─── Load mood entries from Firestore on mount ───────────────────────────────
   useEffect(() => {
@@ -66,6 +89,23 @@ const MoodCalendar = () => {
     };
     load();
   }, [user]);
+
+  useEffect(() => {
+  if (!user) return;
+  const load = async () => {
+    try {
+      const snap = await getDocs(
+        collection(db, "users", user.uid, "reminders")
+      );
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as Reminder));
+      setReminders(data);
+    } catch (err) {
+      console.error("Failed to load reminders:", err);
+    }
+  };
+  load();
+}, [user]);
+
 
   // ─── Calendar helpers ────────────────────────────────────────────────────────
   const daysInMonth     = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -170,7 +210,51 @@ const MoodCalendar = () => {
       setIsSaving(false);
     }
   };
+const handleSaveReminder = async () => {
+  if (!reminderDate || !user || !reminderTitle.trim()) return;
 
+  setIsSavingReminder(true);
+  try {
+    const id    = `${reminderDate}-${Date.now()}`;
+    const entry: Reminder = {
+      id,
+      date:  reminderDate,
+      type:  reminderType,
+      title: reminderTitle,
+      ...(reminderTime ? { time: reminderTime } : {}),
+      ...(reminderNote ? { note: reminderNote } : {}),
+    };
+
+    await setDoc(
+      doc(db, "users", user.uid, "reminders", id),
+      { ...entry, createdAt: serverTimestamp() }
+    );
+
+    setReminders(prev => [...prev, entry]);
+    setReminderTitle("");
+    setReminderTime("");
+    setReminderNote("");
+    setIsReminderOpen(false);
+  } catch (err) {
+    console.error("Failed to save reminder:", err);
+  } finally {
+    setIsSavingReminder(false);
+  }
+};
+
+const handleDeleteReminder = async (reminderId: string) => {
+  if (!user) return;
+  try {
+    const { deleteDoc } = await import("firebase/firestore");
+    await deleteDoc(doc(db, "users", user.uid, "reminders", reminderId));
+    setReminders(prev => prev.filter(r => r.id !== reminderId));
+  } catch (err) {
+    console.error("Failed to delete reminder:", err);
+  }
+};
+
+const getRemindersForDate = (dateStr: string) =>
+  reminders.filter(r => r.date === dateStr);
   const navigateMonth = (direction: number) => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1)
@@ -242,32 +326,42 @@ const MoodCalendar = () => {
                 const dateStr = formatDate(day);
                 const future  = isFutureDate(dateStr);
 
-                return (
-                  <button
-                    key={day}
-                    onClick={() => handleDateClick(day)}
-                    style={entry ? getMoodStyle(entry.moods) : undefined}
-                    disabled={future}
-                    className={`aspect-square rounded-xl p-1 flex flex-col items-center justify-center gap-1 transition-all
-                      ${future ? "opacity-30 cursor-not-allowed" : "hover:scale-105"}
-                      ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
-                      ${entry ? "text-black" : "bg-muted/50 hover:bg-muted"}`}
-                  >
-                    <span className={`text-sm ${isToday ? "font-bold text-primary" : "text-foreground"}`}>
-                      {day}
-                    </span>
-                    {entry && (
-                      <div className="flex -space-x-1">
-                        {entry.moods.slice(0, 2).map((mood, idx) => (
-                          <span key={idx} className="text-sm">{mood}</span>
-                        ))}
-                        {entry.moods.length > 2 && (
-                          <span className="text-xs text-muted-foreground">+{entry.moods.length - 2}</span>
-                        )}
-                      </div>
-                    )}
-                  </button>
-                );
+               return (
+  <button
+    key={day}
+    onClick={() => handleDateClick(day)}
+    style={entry ? getMoodStyle(entry.moods) : undefined}
+    disabled={future}
+    className={`aspect-square rounded-xl p-1 flex flex-col items-center justify-center gap-1 transition-all
+      ${future ? "opacity-30 cursor-not-allowed" : "hover:scale-105"}
+      ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
+      ${entry ? "text-black" : "bg-muted/50 hover:bg-muted"}`}
+  >
+    <span className={`text-sm ${isToday ? "font-bold text-primary" : "text-foreground"}`}>
+      {day}
+    </span>
+    {entry && (
+      <div className="flex -space-x-1">
+        {entry.moods.slice(0, 2).map((mood, idx) => (
+          <span key={idx} className="text-sm">{mood}</span>
+        ))}
+        {entry.moods.length > 2 && (
+          <span className="text-xs">+{entry.moods.length - 2}</span>
+        )}
+      </div>
+    )}
+    {/* ✅ Reminder dots */}
+    {getRemindersForDate(formatDate(day)).length > 0 && (
+      <div className="flex gap-0.5 mt-0.5">
+        {getRemindersForDate(formatDate(day)).slice(0, 3).map((r, i) => (
+          <span key={i} className="text-xs">
+            {reminderTypes.find(t => t.type === r.type)?.emoji || "📌"}
+          </span>
+        ))}
+      </div>
+    )}
+  </button>
+);
               })}
             </div>
           )}
@@ -343,6 +437,105 @@ const MoodCalendar = () => {
           </DialogHeader>
 
           <div className="space-y-6">
+            {/* Reminder Dialog */}
+<Dialog open={isReminderOpen} onOpenChange={setIsReminderOpen}>
+  <DialogContent className="sm:max-w-md">
+    <DialogHeader>
+      <DialogTitle className="font-display">
+        Add Reminder 🗓️
+        {reminderDate && (
+          <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 8 }}>
+            {new Date(reminderDate + "T00:00").toLocaleDateString("en-US", {
+              weekday: "long", month: "long", day: "numeric"
+            })}
+          </span>
+        )}
+      </DialogTitle>
+    </DialogHeader>
+
+    <div className="space-y-4">
+
+      {/* Type selector */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">Type</h4>
+        <div className="flex gap-2">
+          {reminderTypes.map(t => (
+            <button
+              key={t.type}
+              onClick={() => setReminderType(t.type)}
+              style={{
+                flex: 1, padding: "10px 0", borderRadius: 8, cursor: "pointer",
+                border: reminderType === t.type ? "2px solid #D4537E" : "2px solid #f0e8e8",
+                background: reminderType === t.type ? "#FBEAF0" : "#fff",
+                fontSize: 13, fontWeight: reminderType === t.type ? 600 : 400
+              }}
+            >
+              {t.emoji} {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Title */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">
+          {reminderType === "appointment" ? "Doctor / Appointment name" :
+           reminderType === "medicine"    ? "Medicine name" : "Title"}
+        </h4>
+        <input
+          placeholder={
+            reminderType === "appointment" ? "e.g. Dr. Sharma checkup" :
+            reminderType === "medicine"    ? "e.g. Folic acid 5mg" :
+            "e.g. Prenatal yoga class"
+          }
+          value={reminderTitle}
+          onChange={e => setReminderTitle(e.target.value)}
+          style={{
+            width: "100%", padding: "10px 14px", borderRadius: 8,
+            border: "1px solid #e8d5d5", fontSize: 14, outline: "none",
+            boxSizing: "border-box" as const
+          }}
+        />
+      </div>
+
+      {/* Time */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">Time (optional)</h4>
+        <input
+          type="time"
+          value={reminderTime}
+          onChange={e => setReminderTime(e.target.value)}
+          style={{
+            width: "100%", padding: "10px 14px", borderRadius: 8,
+            border: "1px solid #e8d5d5", fontSize: 14, outline: "none",
+            boxSizing: "border-box" as const
+          }}
+        />
+      </div>
+
+      {/* Note */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">Note (optional)</h4>
+        <Textarea
+          placeholder="Any additional details..."
+          value={reminderNote}
+          onChange={e => setReminderNote(e.target.value)}
+          className="resize-none"
+          rows={2}
+        />
+      </div>
+
+      <Button
+        onClick={handleSaveReminder}
+        className="w-full rounded-full"
+        disabled={!reminderTitle.trim() || isSavingReminder}
+      >
+        {isSavingReminder ? "Saving..." : "Save Reminder"}
+      </Button>
+
+    </div>
+  </DialogContent>
+</Dialog>
 
             {/* Mood selector */}
             <div>

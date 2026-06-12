@@ -1,19 +1,19 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
-import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import GrandmaWisdom from "./pages/GrandmaWisdom";
+import Index from "./pages/Index";
 import MaaGang from "./pages/MaaGang";
 import MoodCalendar from "./pages/MoodCalendar";
-import GrandmaWisdom from "./pages/GrandmaWisdom";
-import Screening from "./pages/Screening";
 import NotFound from "./pages/NotFound";
+import Onboarding from "./pages/Onboarding";
+import Screening from "./pages/Screening";
 
 const queryClient = new QueryClient();
 
@@ -66,8 +66,6 @@ const AppRoutes = () => {
           : <GrandmaWisdom />
         } />
       <Route path="/screening"
-
-        <Route path="/screening"
         element={
           !user ? <Navigate to="/auth" replace />
           : needsOnboarding ? <Navigate to="/onboarding" replace />
