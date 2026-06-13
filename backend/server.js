@@ -7,7 +7,7 @@ import cors from "cors";
 import { GoogleGenAI } from "@google/genai";
 import { initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import serviceAccount from "./serviceAccountKey.json" with { type: "json" };
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_JSON);
 
 // ─── Firebase Admin init ──────────────────────────────────────────────────────
 initializeApp({ credential: cert(serviceAccount) });
